@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .producto {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 10px 0;
+    }
+
+    #pagination {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Lista de Productos</h1>
+
+  <div id="productos">
+    {{#each productos}}
+    <div class="producto">
+      <h2>{{this.title}}</h2>
+      <p>Descripción: {{this.description}}</p>
+      <p>Precio: ${{this.price}}</p>
+      <p>Categoría: {{this.category}}</p>
+      <a href="/products/{{this.id}}">Ver Detalles</a>
+      <button onclick="agregarAlCarrito({{this.id}})">Agregar al Carrito</button>
+    </div>
+    {{/each}}
+  </div>
+
+  <div id="pagination">
+    {{#if hasPrevPage}}
+    <a href="?page={{prevPage}}&limit={{limit}}">Página Anterior</a>
+    {{/if}}
+
+    <span>Página {{page}} de {{totalPages}}</span>
+
+    {{#if hasNextPage}}
+    <a href="?page={{nextPage}}&limit={{limit}}">Página Siguiente</a>
+    {{/if}}
+  </div>
+
+  <script>
+    function agregarAlCarrito(productId) {
+      fetch(`/api/carts/1/products/${productId}`, { // Corrección aquí
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ quantity: 1 })
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error al agregar producto al carrito');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Producto agregado al carrito', data);
+          alert('Producto agregado al carrito');
+        })
+        .catch(error => {
+          console.error('Error al agregar producto al carrito', error);
+          alert('Hubo un problema al agregar el producto al carrito');
+        });
+    }
+  </script>
+</body>
+
+</html>

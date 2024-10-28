@@ -1,0 +1,152 @@
+[
+  {
+    "id": 1,
+    "title": "El ingrediente secreto",
+    "description": "Vinilo Adhesivo Sticker Cocina Calcomanía Decorativa",
+    "size": "60x60 cms.",
+    "price": 180,
+    "img": "sin imagen",
+    "code": "coc1517",
+    "stock": 25
+  },
+  {
+    "id": 2,
+    "title": "Cofee break",
+    "description": "Vinilo Adhesivo Sticker Cocina Calcomanía Decorativa",
+    "size": "80x100 cms.",
+    "price": 280,
+    "img": "sin imagen",
+    "code": "coc1522",
+    "stock": 15
+  },
+  {
+    "id": 3,
+    "title": "Un cafecito",
+    "description": "Vinilo Adhesivo Sticker Cocina Calcomanía Decorativa",
+    "size": "60x110 cms.",
+    "price": 220,
+    "img": "sin imagen",
+    "code": "coc1516",
+    "stock": 20
+  },
+  {
+    "id": 4,
+    "title": "Bon appetit",
+    "description": "Vinilo Adhesivo Sticker Cocina Calcomanía Decorativa",
+    "size": "133x60 cms.",
+    "price": 260,
+    "img": "sin imagen",
+    "code": "coc1546",
+    "stock": 10
+  },
+  {
+    "id": 5,
+    "title": "Flowers",
+    "description": "Vinilo Adhesivo Sticker Sala Calcomanía Decorativa",
+    "size": "120x180 cms.",
+    "price": 800,
+    "img": "sin imagen",
+    "code": "sal1970",
+    "stock": 5
+  },
+  {
+    "id": 6,
+    "title": "Tablero de ajedrez",
+    "description": "Vinilo Adhesivo Sticker Sala Calcomanía Decorativa",
+    "size": "100x90 cms.",
+    "price": 290,
+    "img": "sin imagen",
+    "code": "sal3854",
+    "stock": 10
+  },
+  {
+    "id": 7,
+    "title": "Detenerse nunca",
+    "description": "Vinilo Adhesivo Sticker Sala Calcomanía Decorativa",
+    "size": "115x60 cms.",
+    "price": 230,
+    "img": "sin imagen",
+    "code": "sal2971",
+    "stock": 15
+  },
+  {
+    "id": 8,
+    "title": "Cuatro elementos",
+    "description": "Vinilo Adhesivo Sticker Sala Calcomanía Decorativa",
+    "size": "255x50 cms.",
+    "price": 380,
+    "img": "sin imagen",
+    "code": "sal9328",
+    "stock": 10
+  },
+  {
+    "id": 9,
+    "title": "Estrellas",
+    "description": "Vinilo Adhesivo Sticker Recamaras Calcomanía Decorativa",
+    "size": "60x120 cms.",
+    "price": 230,
+    "img": "sin imagen",
+    "code": "rec5720",
+    "stock": 10
+  },
+  {
+    "id": 10,
+    "title": "Queen & King",
+    "description": "Vinilo Adhesivo Sticker Recamaras Calcomanía Decorativa",
+    "size": "140x75 cms.",
+    "price": 330,
+    "img": "sin imagen",
+    "code": "rec3194",
+    "stock": 16
+  },
+  {
+    "id": 11,
+    "title": "Flor de loto",
+    "description": "Vinilo Adhesivo Sticker Recamaras Calcomanía Decorativa",
+    "size": "140x80 cms.",
+    "price": 350,
+    "img": "sin imagen",
+    "code": "rec5387",
+    "stock": 20
+  },
+  {
+    "id": 12,
+    "title": "Naves",
+    "description": "Vinilo Adhesivo Sticker Recamaras Calcomanía Decorativa",
+    "size": "60x130 cms.",
+    "price": 250,
+    "img": "sin imagen",
+    "code": "rec6286",
+    "stock": 10
+  },
+  {
+    "id": 13,
+    "title": "Eres más fuerte",
+    "description": "Vinilo Adhesivo Sticker Gym Calcomanía Decorativa",
+    "size": "138x60 cms.",
+    "price": 260,
+    "img": "sin imagen",
+    "code": "gym4937",
+    "stock": 30
+  },
+  {
+    "id": 15,
+    "title": "No pain no gain",
+    "description": "Vinilo Adhesivo Sticker Gym Calcomanía Decorativa",
+    "size": "92x100 cms.",
+    "price": 290,
+    "img": "sin imagen",
+    "code": "gym1215",
+    "stock": 35
+  },
+  {
+    "id": 16,
+    "title": "utensilios",
+    "description": "Vinilo Adhesivo Sticker Cocina Calcomanía Decorativa",
+    "size": "115x60 cms.",
+    "price": 230,
+    "img": "sin imagen",
+    "code": "coc1943",
+    "stock": 8
+  }
+]

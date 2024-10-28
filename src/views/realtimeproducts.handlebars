@@ -1,0 +1,62 @@
+<h2>Aca voy a trabajar con socket.io y voy a mostrar los productos en tiempo real</h2>
+<h3>Tengo que tener un formulario para cargar productos y un botón para eliminarlos</h3>
+
+<h1>Productos en Tiempo Real</h1>
+
+<div id="contenedorProductos"></div>
+
+<h2>Agregar Producto</h2>
+<form id="formularioProducto">
+  <input type="text" id="title" placeholder="Título" required>
+  <input type="text" id="description" placeholder="Descripción" required>
+  <input type="text" id="size" placeholder="Tamaño" required>
+  <input type="number" id="price" placeholder="Precio" required>
+  <input type="text" id="img" placeholder="img" required>
+  <input type="text" id="code" placeholder="code" required>
+  <input type="text" id="stock" placeholder="stock" required>
+  <button type="submit">Agregar</button>
+</form>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/main.js"></script>
+
+<script>
+// Escuchar cuando llegan productos desde el servidor
+socket.on('products', (products) => {
+const contenedor = document.getElementById('contenedorProductos');
+contenedor.innerHTML = ''; // Limpiar el contenedor
+
+products.forEach(producto => {
+const div = document.createElement('div');
+div.className = 'card';
+div.innerHTML = `
+<h3>${producto.title}</h3>
+<p>${producto.description}</p>
+<p>Precio: ${producto.price}</p>
+<p>Tamaño: ${producto.size}</p>
+<button onclick="eliminarProducto(${producto.id})">Eliminar</button>
+`;
+contenedor.appendChild(div);
+});
+});
+
+// Agregar producto
+document.getElementById('formularioProducto').addEventListener('submit', (event) => {
+event.preventDefault();
+const producto = {
+title: document.getElementById('title').value,
+description: document.getElementById('description').value,
+size: document.getElementById('size').value,
+price: document.getElementById('price').value,
+img: document.getElementById('img').value || "sin imagen",
+code: document.getElementById('code').value,
+stock: document.getElementById('stock').value
+};
+socket.emit('nuevoProducto', producto);
+});
+
+// Eliminar producto
+function eliminarProducto(id) {
+socket.emit('eliminarProducto', id);
+}
+</script>
