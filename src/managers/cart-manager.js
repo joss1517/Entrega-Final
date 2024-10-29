@@ -1,10 +1,10 @@
 const fs = require("fs").promises;
-const path = require("path");
+const path = require("path"); // Asegúrate de incluir esta línea
 
 class CartManager {
   constructor() {
     this.carritos = [];
-    this.path = path.resolve(__dirname, "../data/carts.json"); // Asegúrate de que esta ruta sea correcta
+    this.path = path.resolve(__dirname, "../data/carts.json");
     this.cargarCarritos();
   }
 
@@ -14,7 +14,7 @@ class CartManager {
       this.carritos = JSON.parse(data);
     } catch (error) {
       console.log("Error al cargar los carritos, inicializando array vacío");
-      this.carritos = []; // Inicializar con un array vacío si hay un error
+      this.carritos = [];
     }
   }
 
@@ -26,18 +26,21 @@ class CartManager {
     }
   }
 
-  // Método para crear un carrito
   async crearCarrito() {
-    const nuevoCarrito = { id: this.carritos.length + 1, products: [] };
+    const nuevoCarrito = { _id: this.carritos.length + 1, products: [] };
     this.carritos.push(nuevoCarrito);
     await this.guardarCarritos();
     return nuevoCarrito;
   }
 
   async getCarritoById(id) {
-    const carrito = this.carritos.find(c => c.id === id);
+    const carrito = this.carritos.find(c => c._id === id);
     if (!carrito) throw new Error('Carrito no encontrado');
     return carrito;
+  }
+
+  async getAllCarritos() {
+    return this.carritos; // Método para obtener todos los carritos
   }
 
   async agregarProductoAlCarrito(carritoId, productoId, quantity = 1) {
@@ -45,9 +48,9 @@ class CartManager {
     const productoExistente = carrito.products.find(p => p.product === productoId);
 
     if (productoExistente) {
-      productoExistente.quantity += quantity; // Aumentar cantidad si ya existe
+      productoExistente.quantity += quantity;
     } else {
-      carrito.products.push({ product: productoId, quantity }); // Agregar nuevo producto
+      carrito.products.push({ product: productoId, quantity });
     }
 
     await this.guardarCarritos();
@@ -59,7 +62,7 @@ class CartManager {
     const index = carrito.products.findIndex(p => p.product === productId);
 
     if (index !== -1) {
-      carrito.products.splice(index, 1); // Eliminar producto
+      carrito.products.splice(index, 1);
     }
 
     await this.guardarCarritos();
@@ -68,7 +71,7 @@ class CartManager {
 
   async actualizarCarrito(carritoId, productos) {
     const carrito = await this.getCarritoById(carritoId);
-    carrito.products = productos; // Asigna el nuevo arreglo de productos
+    carrito.products = [];
 
     await this.guardarCarritos();
     return carrito;
@@ -79,7 +82,7 @@ class CartManager {
     const producto = carrito.products.find(prod => prod.product === productId);
 
     if (producto) {
-      producto.quantity = quantity; // Actualiza la cantidad
+      producto.quantity = quantity;
     }
 
     await this.guardarCarritos();
@@ -88,7 +91,7 @@ class CartManager {
 
   async eliminarTodoDelCarrito(carritoId) {
     const carrito = await this.getCarritoById(carritoId);
-    carrito.products = []; // Limpia los productos del carrito
+    carrito.products = [];
 
     await this.guardarCarritos();
     return carrito;

@@ -1,145 +1,77 @@
-const fs = require("fs").promises;
-
-
+const Product = require('../models/product.model'); // Asegúrate de que la ruta sea correcta
 
 class ProductManager {
-
-  static ultId = 0;
-
-
-  constructor(path) {
-    this.products = []
-    this.path = path;
-
-
-
-    this.cargarArray();
-  }
-
-  async cargarArray() {
-    try {
-      this.products = await this.leerArchivo();
-    } catch (error) {
-      console.log("Error al inicializar ProductManager");
-      
-    }
-  }
-
-  async addProduct({ title, description, size, price, img, code, stock}) {
-    
+  async addProduct({ title, description, size, price, img, code, stock }) {
+    // Validación de campos
     if (!title || !description || !size || !price || !img || !code || !stock) {
       console.log("Todos los campos son obligatorios");
       return;
     }
 
-    if (this.products.some(item => item.code === code)) {
+    // Verificar unicidad del código
+    const existingProduct = await Product.findOne({ code });
+    if (existingProduct) {
       console.log("El código debe ser único");
       return;
     }
 
-    const lastProductId = this.products.length > 0
-      ? this.products[this.products.length - 1].id
-      : 0;
-    
-    const nuevoProducto = {
-      id: lastProductId + 1,
-      title,
-      description,
-      size,
-      price,
-      img,
-      code,
-      stock
-    };
-
-
-    this.products.push(nuevoProducto);
-
-    await this.guardarArchivo(this.products);
+    // Crear nuevo producto
+    const nuevoProducto = new Product({ title, description, size, price, img, code, stock });
+    try {
+      await nuevoProducto.save();
+      console.log("Producto agregado exitosamente");
+    } catch (error) {
+      console.log("Error al agregar producto:", error);
+    }
   }
-
-
 
   async getProducts() {
     try {
-      const arrayProductos = await this.leerArchivo();
-      return arrayProductos;
+      return await Product.find(); // Obtener todos los productos
     } catch (error) {
-      console.log(`Error al leer el archivo`, error);
+      console.log("Error al obtener productos:", error);
     }
   }
 
-  
   async getProductById(id) {
     try {
-      const arrayProductos = await this.leerArchivo();
-      const buscado = arrayProductos.find(item => item.id === id);
-
-      if (!buscado) {
+      const producto = await Product.findById(id);
+      if (!producto) {
         console.log("Producto no encontrado");
         return null;
-      } else {
-        console.log("Producto encontrado");
-        return buscado;
       }
+      console.log("Producto encontrado");
+      return producto;
     } catch (error) {
-      console.log("Error al buscar por id", error);
-      
+      console.log("Error al buscar por id:", error);
     }
   }
 
-
-
-  async leerArchivo() {
-    const respuesta = await fs.readFile(this.path, "utf-8");
-    const arrayProductos = JSON.parse(respuesta);
-    return arrayProductos;
-  }
-
-  async guardarArchivo(arrayProductos) {
-    await fs.writeFile(this.path, JSON.stringify(arrayProductos, null, 2));
-  }
-
-  async updateProduct(id, productoActualizado) {
+  async updateProduct(id, updatedData) {
     try {
-      const arrayProductos = await this.leerArchivo();
-
-      const index = arrayProductos.findIndex(item => item.id === id);
-
-      if (index !== -1) {
-        arrayProductos[index] = { ...arrayProductos[index], ...productoActualizado };
-        await this.guardarArchivo(arrayProductos);
-        console.log("Producto actualizado");
-        
-      } else {
+      const productoActualizado = await Product.findByIdAndUpdate(id, updatedData, { new: true });
+      if (!productoActualizado) {
         console.log("No se encuentra el producto");
+        return;
       }
+      console.log("Producto actualizado");
     } catch (error) {
-      console.log("Tenemos un error al actualizar los productos");
-      
+      console.log("Error al actualizar producto:", error);
     }
   }
-
 
   async deleteProduct(id) {
     try {
-      const arrayProductos = await this.leerArchivo();
-      const index = arrayProductos.findIndex(item => item.id === id);
-
-      if (index !== -1) {
-        arrayProductos.splice(index, 1);
-        await this.guardarArchivo(arrayProductos);
-        console.log("Producto eliminado");
-      } else {
+      const resultado = await Product.findByIdAndDelete(id);
+      if (!resultado) {
         console.log("No se encuentra el producto");
+        return;
       }
-      
+      console.log("Producto eliminado");
     } catch (error) {
-      console.log("Tenemos un error al eliminar productos");
-      
+      console.log("Error al eliminar producto:", error);
     }
   }
 }
-
 
 module.exports = ProductManager;

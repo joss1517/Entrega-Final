@@ -4,57 +4,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Productos</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-
-    .producto {
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 15px;
-      margin: 10px 0;
-    }
-
-    #pagination {
-      margin-top: 20px;
-    }
-  </style>
+  <title>Lista de Productos</title>
 </head>
 
 <body>
+
   <h1>Lista de Productos</h1>
 
   <div id="productos">
-    {{#each productos}}
+    {{#each payload}}
     <div class="producto">
       <h2>{{this.title}}</h2>
       <p>Descripción: {{this.description}}</p>
       <p>Precio: ${{this.price}}</p>
       <p>Categoría: {{this.category}}</p>
-      <a href="/products/{{this.id}}">Ver Detalles</a>
-      <button onclick="agregarAlCarrito({{this.id}})">Agregar al Carrito</button>
+      <a href="/products/{{this._id}}">Ver Detalles</a>
+      <button onclick="agregarAlCarrito('{{this._id}}')">Agregar al Carrito</button>
     </div>
     {{/each}}
   </div>
 
   <div id="pagination">
     {{#if hasPrevPage}}
-    <a href="?page={{prevPage}}&limit={{limit}}">Página Anterior</a>
+    <a href="?page={{prevPage}}&limit={{../limit}}">Página Anterior</a>
     {{/if}}
 
     <span>Página {{page}} de {{totalPages}}</span>
 
     {{#if hasNextPage}}
-    <a href="?page={{nextPage}}&limit={{limit}}">Página Siguiente</a>
+    <a href="?page={{nextPage}}&limit={{../limit}}">Página Siguiente</a>
     {{/if}}
   </div>
 
   <script>
     function agregarAlCarrito(productId) {
-      fetch(`/api/carts/1/products/${productId}`, { // Corrección aquí
+      fetch(`/api/carts/1/products/${productId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -77,6 +61,7 @@
         });
     }
   </script>
+
 </body>
 
 </html>

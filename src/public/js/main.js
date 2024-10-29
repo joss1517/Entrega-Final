@@ -2,8 +2,8 @@ const socket = io();
 
 socket.on('products', (data) => {
   console.log(data);
-  
-})
+  renderProductos(data); 
+});
 
 const renderProductos = (products) => {
   const contenedorProductos = document.getElementById('contenedorProductos')

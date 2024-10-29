@@ -1,30 +1,41 @@
 const express = require("express");
 const router = express.Router();
 const ProductManager = require("../managers/product-manager.js");
+const Product = require("../models/product.model.js");
 const CartManager = require("../managers/cart-manager.js");
-const productManager = new ProductManager("./src/data/products.json");
 const cartManager = new CartManager("./src/data/carts.json");
 
 // Ruta para ver productos
-router.get("/products", async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+// En views.router.js o en el archivo controlador correspondiente
+// Ruta para ver productos con paginación y filtros
+router.get('/products', async (req, res) => {
+  const { page = 1, limit = 10, sort, query } = req.query;
+  const filter = query ? { title: { $regex: query, $options: 'i' } } : {};
 
   try {
-    const productos = await productManager.getProducts({ page, limit });
-    res.render("products", {
-      productos: productos.payload,
-      totalPages: productos.totalPages,
-      prevPage: productos.prevPage,
-      nextPage: productos.nextPage,
-      page: productos.page,
-      hasPrevPage: productos.hasPrevPage,
-      hasNextPage: productos.hasNextPage,
+    const options = {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      sort: sort ? { price: sort } : {}
+    };
+
+    const result = await Product.paginate(filter, options);
+    res.render('products', {
+      payload: result.docs,
+      hasPrevPage: result.hasPrevPage,
+      hasNextPage: result.hasNextPage,
+      prevPage: result.prevPage,
+      nextPage: result.nextPage,
+      totalPages: result.totalPages,
+      page: result.page,
       limit
     });
   } catch (error) {
-    res.status(500).send("Error al obtener productos");
+    res.status(500).send('Error al cargar los productos');
   }
 });
+
+
 
 // Ruta para ver un carrito específico
 router.get("/carts/:cid", async (req, res) => {
@@ -38,6 +49,36 @@ router.get("/carts/:cid", async (req, res) => {
     });
   } catch (error) {
     res.status(500).send("Error al obtener el carrito");
+  }
+});
+
+// Ruta para la página principal
+// Ruta para la página principal
+router.get('/', async (req, res) => {
+  const { page = 1, limit = 10, sort, query } = req.query;
+  const filter = query ? { title: { $regex: query, $options: 'i' } } : {};
+
+  try {
+    const options = {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      sort: sort ? { price: sort } : {}
+    };
+
+    const result = await Product.paginate(filter, options);
+    res.render('home', {
+      products: result.docs,
+      hasPrevPage: result.hasPrevPage,
+      hasNextPage: result.hasNextPage,
+      prevPage: result.prevPage,
+      nextPage: result.nextPage,
+      totalPages: result.totalPages,
+      page: result.page,
+      limit
+    });
+  } catch (error) {
+    console.error(error); // Agregar este log
+    res.status(500).send('Error al obtener los productos');
   }
 });
 

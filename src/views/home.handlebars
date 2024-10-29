@@ -1,14 +1,42 @@
-
 <h1>Lista de Productos</h1>
 
-{{#each products}}
-<div class="card">
-  <h3>{{this.title}}</h3>
-  <p>{{this.description}}</p>
-  <p>Precio: {{this.price}}</p>
-  <p>Tamaño: {{this.size}}</p>
-  <p>img: {{this.img}}</p>
-  <p>code: {{this.code}}</p>
-  <p>stock: {{this.stock}}</p>
+<div id="productos">
+  {{#each products}}
+  <div class="card">
+    <h3>{{this.title}}</h3>
+    <p>Descripción: {{this.description}}</p>
+    <p>Precio: ${{this.price}}</p>
+    <p>Tamaño: {{this.size}}</p>
+    <p>Imagen: {{this.img}}</p>
+    <p>Código: {{this.code}}</p>
+    <p>Stock: {{this.stock}}</p>
+    <button onclick="agregarAlCarrito('{{this._id}}')">Agregar al Carrito</button>
+  </div>
+  {{/each}}
 </div>
-{{/each}}
+
+<script>
+  function agregarAlCarrito(productId) {
+    fetch(`/api/carts/1/products/${productId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ quantity: 1 })
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al agregar producto al carrito');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Producto agregado al carrito', data);
+        alert('Producto agregado al carrito');
+      })
+      .catch(error => {
+        console.error('Error al agregar producto al carrito', error);
+        alert('Hubo un problema al agregar el producto al carrito');
+      });
+  }
+</script>

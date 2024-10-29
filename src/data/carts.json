@@ -36,5 +36,17 @@
   {
     "id": 6,
     "products": []
+  },
+  {
+    "_id": 7,
+    "products": [
+      {
+        "quantity": 4
+      },
+      {
+        "product": "671eb578e47c5ec065507a0d",
+        "quantity": 2
+      }
+    ]
   }
 ]

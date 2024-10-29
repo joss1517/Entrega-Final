@@ -1,120 +1,114 @@
 const express = require("express");
 const router = express.Router();
-const ProductManager = require("../managers/product-manager.js");
-const manager = new ProductManager("./src/data/products.json");
+const Product = require("../models/product.model.js"); // Asegúrate de que la ruta al modelo sea correcta
 
+// Obtener productos con paginación y filtros
 router.get("/", async (req, res) => {
-  const { limit = 10, page = 1, sort, query, category, available } = req.query; // Obtener los parámetros de consulta
-  const limitNum = parseInt(limit); // Convertir limit a número
-  const pageNum = parseInt(page); // Convertir page a número
+  const { limit = 10, page = 1, sort, query, category, available } = req.query;
+  const limitNum = parseInt(limit);
+  const pageNum = parseInt(page);
 
   try {
-    let arrayProductos = await manager.getProducts(); // Obtener todos los productos
+    let queryObject = {};
 
-    // Filtrar productos si hay un query
+    // Filtrar productos por nombre (query), categoría y disponibilidad
     if (query) {
-      arrayProductos = arrayProductos.filter(product =>
-        product.name.toLowerCase().includes(query.toLowerCase()) // Filtrar por nombre
-      );
+      queryObject.title = { $regex: query, $options: "i" }; // Filtrar por título
     }
-
-    // Filtrar por categoría si hay un category
     if (category) {
-      arrayProductos = arrayProductos.filter(product =>
-        product.category && product.category.toLowerCase() === category.toLowerCase()
-      );
+      queryObject.category = category; // Filtrar por categoría
+    }
+    if (available !== undefined) {
+      queryObject.available = available === 'true'; // Filtrar por disponibilidad
     }
 
-    // Filtrar por disponibilidad si hay un available
-    if (available !== undefined) { // Comprobar que 'available' no sea undefined
-      const isAvailable = available === 'true'; // Convertir a boolean
-      arrayProductos = arrayProductos.filter(product => product.available === isAvailable);
-    }
+    // Obtener productos con paginación y ordenamiento
+    let arrayProductos = await Product.find(queryObject)
+      .limit(limitNum)
+      .skip((pageNum - 1) * limitNum)
+      .sort(sort === 'asc' ? { price: 1 } : sort === 'desc' ? { price: -1 } : {})
+      .exec();
 
-    // Ordenar productos si hay un sort
-    if (sort === 'asc') {
-      arrayProductos.sort((a, b) => a.price - b.price); // Ordenar ascendente por precio
-    } else if (sort === 'desc') {
-      arrayProductos.sort((a, b) => b.price - a.price); // Ordenar descendente por precio
-    }
+    const total = await Product.countDocuments(queryObject); // Total de productos filtrados
+    const totalPages = Math.ceil(total / limitNum);
 
-    // Implementar paginación
-    const total = arrayProductos.length; // Total de productos filtrados
-    const totalPages = Math.ceil(total / limitNum); // Total de páginas
-    const startIndex = (pageNum - 1) * limitNum; // Índice inicial para la paginación
-    const endIndex = startIndex + limitNum; // Índice final para la paginación
-    const paginatedProducts = arrayProductos.slice(startIndex, endIndex); // Productos de la página actual
-
-    // Respuesta JSON con detalles de paginación
+    // Respuesta JSON con paginación y enlaces
     res.json({
       status: 'success',
-      payload: paginatedProducts,
+      payload: arrayProductos,
       totalPages,
       prevPage: pageNum > 1 ? pageNum - 1 : null,
       nextPage: pageNum < totalPages ? pageNum + 1 : null,
       page: pageNum,
       hasPrevPage: pageNum > 1,
       hasNextPage: pageNum < totalPages,
-      prevLink: pageNum > 1 ? `http://localhost:8080/api/products?limit=${limitNum}&page=${pageNum - 1}&sort=${sort || ''}&query=${query || ''}&category=${category || ''}&available=${available || ''}` : null,
-      nextLink: pageNum < totalPages ? `http://localhost:8080/api/products?limit=${limitNum}&page=${pageNum + 1}&sort=${sort || ''}&query=${query || ''}&category=${category || ''}&available=${available || ''}` : null,
+      prevLink: pageNum > 1 ? `/api/products?limit=${limitNum}&page=${pageNum - 1}&sort=${sort || ''}&query=${query || ''}&category=${category || ''}&available=${available || ''}` : null,
+      nextLink: pageNum < totalPages ? `/api/products?limit=${limitNum}&page=${pageNum + 1}&sort=${sort || ''}&query=${query || ''}&category=${category || ''}&available=${available || ''}` : null,
     });
   } catch (error) {
     res.status(500).json({ status: 'error', message: "Error del servidor" });
   }
 });
 
+// Obtener producto por ID
 router.get("/:pid", async (req, res) => {
-  let id = req.params.pid;
+  const id = req.params.pid;
 
   try {
-    const productoBuscado = await manager.getProductById(parseInt(id));
+    const productoBuscado = await Product.findById(id);
 
     if (!productoBuscado) {
-      res.send("Producto no encontrado");
+      res.status(404).json({ status: 'error', message: "Producto no encontrado" });
     } else {
-      res.send(productoBuscado);
+      res.json({ status: 'success', payload: productoBuscado });
     }
-
   } catch (error) {
-    res.status(500).send("Error del servidor");
+    res.status(500).json({ status: 'error', message: "Error del servidor" });
   }
 });
 
+// Agregar nuevo producto
 router.post("/", async (req, res) => {
   const nuevoProducto = req.body;
 
   try {
-    await manager.addProduct(nuevoProducto);
-    const productosActualizados = await manager.getProducts();
-    io.emit('products', productosActualizados);
-    res.status(201).send("Producto agregado exitosamente");
+    const productoCreado = await Product.create(nuevoProducto);
+    res.status(201).json({ status: 'success', payload: productoCreado });
   } catch (error) {
-    res.status(500).send("Error del servidor");
+    res.status(500).json({ status: 'error', message: "Error del servidor" });
   }
 });
 
+// Actualizar producto por ID
 router.put("/:pid", async (req, res) => {
-  const id = parseInt(req.params.pid);
+  const id = req.params.pid;
   const productoActualizado = req.body;
 
   try {
-    await manager.updateProduct(id, productoActualizado);
-    res.send("Producto actualizado exitosamente");
+    const producto = await Product.findByIdAndUpdate(id, productoActualizado, { new: true });
+
+    if (!producto) {
+      return res.status(404).json({ status: 'error', message: "Producto no encontrado" });
+    }
+    res.json({ status: 'success', payload: producto });
   } catch (error) {
-    res.status(500).send("Error del servidor");
+    res.status(500).json({ status: 'error', message: "Error del servidor" });
   }
 });
 
+// Eliminar producto por ID
 router.delete("/:pid", async (req, res) => {
-  const id = parseInt(req.params.pid);
+  const id = req.params.pid;
 
   try {
-    await manager.deleteProduct(id);
-    const productosActualizados = await manager.getProducts();
-    io.emit('products', productosActualizados);
-    res.send("Producto eliminado exitosamente");
+    const productoEliminado = await Product.findByIdAndDelete(id);
+
+    if (!productoEliminado) {
+      return res.status(404).json({ status: 'error', message: "Producto no encontrado" });
+    }
+    res.json({ status: 'success', message: "Producto eliminado exitosamente" });
   } catch (error) {
-    res.status(500).send("Error del servidor");
+    res.status(500).json({ status: 'error', message: "Error del servidor" });
   }
 });
 
