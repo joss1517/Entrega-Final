@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema({
   stock: { type: Number, required: true }
 });
 
-productSchema.plugin(mongoosePaginate); // Agregar el plugin de paginación
+productSchema.plugin(mongoosePaginate); 
 
 const Product = mongoose.model('Product', productSchema);
 

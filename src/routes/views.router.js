@@ -43,16 +43,16 @@ router.get("/carts/:cid", async (req, res) => {
 
   try {
     const carrito = await cartManager.getCarritoById(carritoId);
-    res.render("cart", {
+    res.render("carts", {
       cid: carritoId,
-      productos: carrito.products // Aquí debes hacer un populate si es necesario
+      productos: carrito.products 
     });
   } catch (error) {
     res.status(500).send("Error al obtener el carrito");
   }
 });
 
-// Ruta para la página principal
+
 // Ruta para la página principal
 router.get('/', async (req, res) => {
   const { page = 1, limit = 10, sort, query } = req.query;
@@ -77,7 +77,7 @@ router.get('/', async (req, res) => {
       limit
     });
   } catch (error) {
-    console.error(error); // Agregar este log
+    console.error(error); 
     res.status(500).send('Error al obtener los productos');
   }
 });

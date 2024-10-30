@@ -1,5 +1,5 @@
 const fs = require("fs").promises;
-const path = require("path"); // Asegúrate de incluir esta línea
+const path = require("path"); 
 
 class CartManager {
   constructor() {
@@ -39,8 +39,8 @@ class CartManager {
     return carrito;
   }
 
-  async getAllCarritos() {
-    return this.carritos; // Método para obtener todos los carritos
+  async todosLosCarritos() {
+    return this.carritos;
   }
 
   async agregarProductoAlCarrito(carritoId, productoId, quantity = 1) {
@@ -58,35 +58,27 @@ class CartManager {
   }
 
   async eliminarProductoDelCarrito(carritoId, productId) {
-    const carrito = await this.getCarritoById(carritoId);
-    const index = carrito.products.findIndex(p => p.product === productId);
-
-    if (index !== -1) {
-      carrito.products.splice(index, 1);
-    }
-
-    await this.guardarCarritos();
-    return carrito;
+    return await Cart.findByIdAndUpdate(
+      carritoId,
+      { $pull: { products: { product: productId } } },
+      { new: true }
+    ).populate("products.product"); 
   }
 
   async actualizarCarrito(carritoId, productos) {
-    const carrito = await this.getCarritoById(carritoId);
-    carrito.products = [];
-
-    await this.guardarCarritos();
-    return carrito;
+    return await Cart.findByIdAndUpdate(
+      carritoId,
+      { products: productos },
+      { new: true }
+    ).populate("products.product");
   }
 
   async actualizarCantidadProducto(carritoId, productId, quantity) {
-    const carrito = await this.getCarritoById(carritoId);
-    const producto = carrito.products.find(prod => prod.product === productId);
-
-    if (producto) {
-      producto.quantity = quantity;
-    }
-
-    await this.guardarCarritos();
-    return carrito;
+    return await Cart.findOneAndUpdate(
+      { _id: carritoId, "products.product": productId },
+      { $set: { "products.$.quantity": quantity } },
+      { new: true }
+    ).populate("products.product");
   }
 
   async eliminarTodoDelCarrito(carritoId) {
@@ -96,6 +88,16 @@ class CartManager {
     await this.guardarCarritos();
     return carrito;
   }
+
+  async eliminarTodoDelCarrito(carritoId) {
+    return await Cart.findByIdAndUpdate(
+      carritoId,
+      { products: [] },
+      { new: true }
+    ).populate("products.product");
+  }
+
+
 }
 
 module.exports = CartManager;

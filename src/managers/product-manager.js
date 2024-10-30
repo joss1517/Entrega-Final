@@ -1,4 +1,4 @@
-const Product = require('../models/product.model'); // Asegúrate de que la ruta sea correcta
+const Product = require('../models/product.model');
 
 class ProductManager {
   async addProduct({ title, description, size, price, img, code, stock }) {
@@ -8,7 +8,7 @@ class ProductManager {
       return;
     }
 
-    // Verificar unicidad del código
+    
     const existingProduct = await Product.findOne({ code });
     if (existingProduct) {
       console.log("El código debe ser único");
@@ -25,9 +25,10 @@ class ProductManager {
     }
   }
 
+  // Obtener todos los productos
   async getProducts() {
     try {
-      return await Product.find(); // Obtener todos los productos
+      return await Product.find(); 
     } catch (error) {
       console.log("Error al obtener productos:", error);
     }

@@ -34,7 +34,7 @@ div.innerHTML = `
 <p>${producto.description}</p>
 <p>Precio: ${producto.price}</p>
 <p>Tamaño: ${producto.size}</p>
-<button onclick="eliminarProducto(${producto.id})">Eliminar</button>
+<button onclick="eliminarProducto(${producto._id})">Eliminar</button>
 `;
 contenedor.appendChild(div);
 });

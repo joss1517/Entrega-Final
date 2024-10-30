@@ -12,7 +12,7 @@ mongoose.connect("mongodb+srv://ipunto09:coderhouse@cluster0.35esf.mongodb.net/P
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
 const app = express();
-const PUERTO = 8081;
+const PUERTO = 8080;
 
 // Configuración de middleware
 app.use(express.json());
@@ -21,14 +21,14 @@ app.use(express.static("./src/public"));
 
 // Configuración de Handlebars
 app.engine("handlebars", exphbs.engine());
-app.engine('handlebars', hbs({
-  runtimeOptions: {
-    allowProtoPropertiesByDefault: true,
-    allowProtoMethodsByDefault: true,
-  }
-}));
 app.set("view engine", "handlebars");
 app.set('views', './src/views');
+app.engine("handlebars", exphbs.engine({
+  runtimeOptions: {
+    allowProtoPropertiesByDefault: true,
+    allowProtoMethodsByDefault: true
+  }
+}));
 
 // Configuración de rutas
 app.use("/api/products", productRouter);
@@ -55,14 +55,14 @@ io.on('connection', async (socket) => {
   socket.on('nuevoProducto', async (producto) => {
     await manager.addProduct(producto);
     const productosActualizados = await manager.getProducts();
-    io.emit('products', productosActualizados); // Actualizar todos los clientes
+    io.emit('products', productosActualizados); 
   });
 
   // Escuchar eventos de eliminar producto
   socket.on('eliminarProducto', async (id) => {
     await manager.deleteProduct(id);
     const productosActualizados = await manager.getProducts();
-    io.emit('products', productosActualizados); // Actualizar todos los clientes
+    io.emit('products', productosActualizados); 
   });
 });
 

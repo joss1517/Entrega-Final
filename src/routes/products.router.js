@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Product = require("../models/product.model.js"); // Asegúrate de que la ruta al modelo sea correcta
+const Product = require("../models/product.model.js"); 
 
 // Obtener productos con paginación y filtros
 router.get("/", async (req, res) => {
@@ -13,13 +13,13 @@ router.get("/", async (req, res) => {
 
     // Filtrar productos por nombre (query), categoría y disponibilidad
     if (query) {
-      queryObject.title = { $regex: query, $options: "i" }; // Filtrar por título
+      queryObject.title = { $regex: query, $options: "i" }; 
     }
     if (category) {
-      queryObject.category = category; // Filtrar por categoría
+      queryObject.category = category; 
     }
     if (available !== undefined) {
-      queryObject.available = available === 'true'; // Filtrar por disponibilidad
+      queryObject.available = available === 'true'; 
     }
 
     // Obtener productos con paginación y ordenamiento
@@ -29,7 +29,7 @@ router.get("/", async (req, res) => {
       .sort(sort === 'asc' ? { price: 1 } : sort === 'desc' ? { price: -1 } : {})
       .exec();
 
-    const total = await Product.countDocuments(queryObject); // Total de productos filtrados
+    const total = await Product.countDocuments(queryObject); 
     const totalPages = Math.ceil(total / limitNum);
 
     // Respuesta JSON con paginación y enlaces
